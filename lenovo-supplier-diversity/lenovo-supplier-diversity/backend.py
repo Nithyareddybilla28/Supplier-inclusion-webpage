@@ -13,6 +13,8 @@ import os
 import pandas as pd
 import secrets
 from io import BytesIO
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 # ============ CONFIG ============
 DATABASE_URL = "sqlite:///./lenovo_suppliers.db"
@@ -656,7 +658,13 @@ def download_template():
     df.to_excel(output, index=False, engine='openpyxl')
     output.seek(0)
     return output
-
+app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+@app.get("/")
+async def serve_frontend():
+    return FileResponse("dist/index.html")
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str):
+    return FileResponse("dist/index.html")
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
