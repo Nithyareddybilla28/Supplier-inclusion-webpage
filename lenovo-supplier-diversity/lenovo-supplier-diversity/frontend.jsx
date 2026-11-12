@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import lenovoLogo from './Lenovo Logo.png';
-
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
   headers: { 'Content-Type': 'application/json' }
 });
-
 // ============ COLOR PALETTE ============
 const COLORS = {
   lenvoRed: '#E81828',
