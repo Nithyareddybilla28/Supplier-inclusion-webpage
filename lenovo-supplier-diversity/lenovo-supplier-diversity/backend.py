@@ -13,6 +13,9 @@ import os
 import pandas as pd
 import secrets
 from io import BytesIO
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 # ============ CONFIG ============
 DATABASE_URL = "sqlite:///./lenovo_suppliers.db"
@@ -656,6 +659,19 @@ def download_template():
     df.to_excel(output, index=False, engine='openpyxl')
     output.seek(0)
     return output
+
+if os.path.exists("dist"):
+    app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+
+    @app.get("/")
+    async def serve_react():
+        return FileResponse("dist/index.html")
+
+    @app.get("/{full_path:path}")
+    async def react_router(full_path: str):
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404)
+        return FileResponse("dist/index.html")
 
 if __name__ == "__main__":
     import uvicorn
